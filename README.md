@@ -33,8 +33,9 @@ A modelagem dimensional é uma arquitetura de projeto lógico, muito utilizada e
 
 #### Tabela Fato
 A tabela fato é o centro do modelo dimensional, integrando os dados das tabelas de dimensão.
+[https://raw.githubusercontent.com/WendelBitencourt/DW-Analize-Aberturas-Xadrez/main/graficos/fato.png]
 
-#### Tabela Dimensão
+#### Tabelas Dimensão
 A tabela dimensão representa uma parte do fato ou assunto que está sendo analisado.
 
 #### Modelos Estrela e Floco de Neve

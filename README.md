@@ -1,6 +1,6 @@
 # Data Warehouse - Análise de Aberturas de Xadrez
 
-*Aluno: Wendel Adriano Bitencourt
+Aluno: Wendel Adriano Bitencourt
 
 
 ## 1. Introdução:

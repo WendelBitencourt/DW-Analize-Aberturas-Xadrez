@@ -37,10 +37,11 @@ A tabela fato é o centro do modelo dimensional, integrando os dados das tabelas
 
 #### Tabelas Dimensão
 A tabela dimensão representa uma parte do fato ou assunto que está sendo analisado.
+![Tabela Dimensão](https://raw.githubusercontent.com/WendelBitencourt/DW-Analize-Aberturas-Xadrez/main/graficos/dimensoes.png)
 
 #### Modelos Estrela e Floco de Neve
 - **Modelo Estrela**: Tabelas de dimensão conectadas diretamente à tabela fato.
-- **Modelo Floco de Neve**: Normaliza tabelas de dimensão, aumentando a complexidade.
+
 
 ## 3. Metodologia
 

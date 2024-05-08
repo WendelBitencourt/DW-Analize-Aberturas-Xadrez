@@ -162,7 +162,7 @@ O processo de elaboração do Data Warehouse envolveu as seguintes etapas:
     - Criação de gráficos e dashboards para visualização dos resultados.
 
 
-### 4.4 Consultas e Análise
+### 4.5 Consultas e Análise
 Foram desenvolvidas várias consultas SQL para responder a perguntas-chave sobre aberturas de xadrez:
 
 #### 1.Quais aberturas levam à maior taxa de vitórias?

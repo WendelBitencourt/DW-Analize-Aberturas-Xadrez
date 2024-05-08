@@ -39,9 +39,9 @@ A tabela fato é o centro do modelo dimensional, integrando os dados das tabelas
 A tabela dimensão representa uma parte do fato ou assunto que está sendo analisado.
 ![Tabela Dimensão](https://raw.githubusercontent.com/WendelBitencourt/DW-Analize-Aberturas-Xadrez/main/graficos/dimensoes.png)
 
-#### Modelos Estrela e Floco de Neve
+#### Modelo Estrela
 - **Modelo Estrela**: Tabelas de dimensão conectadas diretamente à tabela fato.
-
+![Modelo estrela](https://raw.githubusercontent.com/WendelBitencourt/DW-Analize-Aberturas-Xadrez/main/graficos/Esquema%20Estrela.png)
 
 ## 3. Metodologia
 
@@ -58,6 +58,112 @@ Os dados utilizados para compor o Data Warehouse são oriundos de um arquivo CSV
 
 ### 4. 2 Desenvolvimento
 
+
+### 4.1 Escolha do Tema e Problemática
+O tema do projeto é "Análise de Aberturas de Xadrez". A problemática abordada foi identificar as aberturas mais eficazes e populares entre jogadores de diferentes níveis de habilidade, analisando tendências e a eficácia de diferentes estratégias de abertura. As perguntas foram baseadas em fatores como a eficácia das aberturas, popularidade ao longo do tempo e preferência entre jogadores altamente classificados.
+
+### 4.2 Extração do Arquivo CSV para o Banco "ChessGames"
+Os dados das partidas foram extraídos do arquivo CSV disponível no Kaggle (https://www.kaggle.com/datasets/datasnaek/chess) e carregados na tabela `games` do banco `ChessGames` para pré-processamento. 
+
+#### Tabela `games` (Banco `ChessGames`)
+```sql
+CREATE TABLE games (
+    id VARCHAR(255) PRIMARY KEY,
+    rated ENUM('TRUE', 'FALSE'),
+    created_at BIGINT,
+    last_move_at BIGINT,
+    turns INT,
+    victory_status ENUM('mate', 'resign', 'stalemate', 'timeout'),
+    winner ENUM('branco', 'preto', 'empate'),
+    increment_code VARCHAR(255),
+    white_id VARCHAR(255),
+    white_rating INT,
+    black_id VARCHAR(255),
+    black_rating INT,
+    opening_eco VARCHAR(10),
+    opening_name VARCHAR(255),
+    opening_ply INT
+);
+```
+
+### 4.3 Criação do Banco "ChessDW" e Perguntas Respondidas
+
+As tabelas de dimensão e fato foram criadas no banco ChessDW para estruturar a análise dos dados. O esquema estrela foi utilizado para organizar as informações de forma eficiente.
+
+
+
+#### Tabelas do Banco "ChessDW"
+#####Tabela DimJogador
+```sql
+CREATE TABLE DimJogador (
+    jogador_id VARCHAR(255) PRIMARY KEY,
+    rating INT
+);
+```
+#####Tabela DimPartida
+```sql
+CREATE TABLE DimPartida (
+    partida_id INT PRIMARY KEY,
+    num_turnos INT,
+    rated ENUM('TRUE', 'FALSE')
+);
+
+
+```
+#####Tabela DimTempo
+```sql
+CREATE TABLE DimTempo (
+    tempo_id INT PRIMARY KEY,
+    data_partida DATE,
+    ano INT,
+    mes INT,
+    dia INT,
+    hora INT
+);
+
+```
+#####Tabela DimAbertura
+```sql
+CREATE TABLE DimAbertura (
+    abertura_id VARCHAR(10) PRIMARY KEY,
+    nome_abertura VARCHAR(255)
+);
+
+```
+#####Tabela FatoPartidas
+```sql
+CREATE TABLE FatoPartidas (
+    fato_id INT PRIMARY KEY,
+    partida_id INT,
+    jogador_branco_id VARCHAR(255),
+    jogador_preto_id VARCHAR(255),
+    tempo_id INT,
+    abertura_id VARCHAR(10),
+    vencedor ENUM('branco', 'preto', 'empate'),
+    FOREIGN KEY (partida_id) REFERENCES DimPartida(partida_id),
+    FOREIGN KEY (jogador_branco_id) REFERENCES DimJogador(jogador_id),
+    FOREIGN KEY (jogador_preto_id) REFERENCES DimJogador(jogador_id),
+    FOREIGN KEY (tempo_id) REFERENCES DimTempo(tempo_id),
+    FOREIGN KEY (abertura_id) REFERENCES DimAbertura(abertura_id)
+);
+
+```
+
+
+### 4.4 Processo de Elaboração do DW
+O processo de elaboração do Data Warehouse envolveu as seguintes etapas:
+
+- Modelagem do Esquema:
+    - Definição das tabelas de dimensão e fato para criar um esquema do tipo estrela.
+    - Criação de tabelas de dimensão para jogadores, partidas, tempo e aberturas.
+- Construção das Tabelas:
+    - Criação das tabelas DimJogador, DimPartida, DimTempo, DimAbertura e FatoPartidas utilizando SQL.
+- Carregamento dos Dados:
+    - Importação dos dados das partidas a partir do arquivo CSV.
+    - Inserção dos dados transformados nas tabelas de dimensão e fato.
+- Análise dos Dados:
+    - Desenvolvimento de consultas SQL para responder perguntas-chave sobre as aberturas de xadrez.
+    - Criação de gráficos e dashboards para visualização dos resultados.
 
 
 

@@ -31,13 +31,6 @@ Características básicas de um DW incluem:
 ### 2.3 Modelagem Dimensional
 A modelagem dimensional é uma arquitetura de projeto lógico, muito utilizada em DWs, para melhorar o desempenho de consultas. Ela ocorre de forma diferente do modelo relacional, focando em resultados rápidos para auxiliar na tomada de decisões.
 
-#### Comparação entre Modelos Dimensional e Relacional
-| Modelo Dimensional | Modelo Relacional |
-|---------------------|-------------------|
-| Mais fácil e intuitivo | Mais complexo |
-| Tabelas Fato e Dimensão | Tabelas de Dados e Relacionamentos |
-| Tabelas Fato são o núcleo | Todas as tabelas são normalizadas |
-
 #### Tabela Fato
 A tabela fato é o centro do modelo dimensional, integrando os dados das tabelas de dimensão.
 

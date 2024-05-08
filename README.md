@@ -3,9 +3,7 @@
 *Aluno: Wendel Adriano Bitencourt
 
 
-## 1. Introdução
-
-Com o crescimento da quantidade de partidas de xadrez registradas digitalmente e disponíveis para análise, torna-se crucial organizar esses dados de forma eficiente para gerar insights valiosos sobre estratégias de abertura. Um Data Warehouse (DW) dedicado a essa análise pode fornecer formas de consulta eficientes e detalhadas.
+## 1. Introdução:
 
 Este projeto tem como objetivo a implementação de um Data Warehouse para análise das aberturas de xadrez, permitindo compreender a eficácia, popularidade e tendências dessas aberturas ao longo do tempo. 
 
@@ -56,8 +54,6 @@ O desenvolvimento do Data Warehouse foi dividido nas seguintes etapas:
 ### 4.1 Fontes de Dados
 Os dados utilizados para compor o Data Warehouse são oriundos de um arquivo CSV do site [https://www.kaggle.com/datasets/datasnaek/chess] contendo detalhes de partidas de xadrez.
 
-### 4. 2 Desenvolvimento
-
 
 ### 4.1 Escolha do Tema e Problemática
 O tema do projeto é "Análise de Aberturas de Xadrez". A problemática abordada foi identificar as aberturas mais eficazes e populares entre jogadores de diferentes níveis de habilidade, analisando tendências e a eficácia de diferentes estratégias de abertura. As perguntas foram baseadas em fatores como a eficácia das aberturas, popularidade ao longo do tempo e preferência entre jogadores altamente classificados.
@@ -93,7 +89,7 @@ As tabelas de dimensão e fato foram criadas no banco ChessDW para estruturar a 
 
 
 #### Tabelas do Banco "ChessDW"
-#####Tabela DimJogador
+##### Tabela DimJogador
 ```sql
 CREATE TABLE DimJogador (
     jogador_id VARCHAR(255) PRIMARY KEY,
@@ -166,5 +162,103 @@ O processo de elaboração do Data Warehouse envolveu as seguintes etapas:
     - Criação de gráficos e dashboards para visualização dos resultados.
 
 
+### 4.4 Consultas e Análise
+Foram desenvolvidas várias consultas SQL para responder a perguntas-chave sobre aberturas de xadrez:
+
+#### 1.Quais aberturas levam à maior taxa de vitórias?
+```sql
+SELECT 
+    a.nome_abertura,
+    COUNT(*) AS total_partidas,
+    SUM(CASE WHEN f.vencedor = 'branco' THEN 1 
+             WHEN f.vencedor = 'preto' THEN 1 
+             ELSE 0 END) AS total_vitorias
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+GROUP BY a.nome_abertura
+ORDER BY total_vitorias DESC
+LIMIT 10;
+```
+#### 2. Quais aberturas são mais populares entre os jogadores com alta classificação?
+```sql
+SELECT 
+    a.nome_abertura,
+    AVG(j.rating) AS media_rating
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimJogador j ON f.jogador_branco_id = j.jogador_id OR f.jogador_preto_id = j.jogador_id
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+GROUP BY a.nome_abertura
+ORDER BY media_rating DESC
+LIMIT 10;
+
+```
+
+#### 3. Qual abertura foi a mais popular no ano(2017)?
+```sql
+SELECT 
+    a.nome_abertura,
+    COUNT(*) AS total_uso
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimTempo t ON f.tempo_id = t.tempo_id
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+WHERE t.ano = 2017
+GROUP BY a.nome_abertura
+ORDER BY total_uso DESC
+LIMIT 10;
 
 
+```
+
+#### 4. Quais aberturas mais eficazes contra jogadores altamente classificados?
+
+```sql
+
+SELECT 
+    a.nome_abertura,
+    AVG(j.rating) AS media_rating_oponente,
+    SUM(CASE WHEN f.vencedor = 'branco' THEN 1 
+             WHEN f.vencedor = 'preto' THEN 1 
+             ELSE 0 END) AS total_vitorias,
+    COUNT(*) AS total_partidas
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimJogador j ON f.jogador_preto_id = j.jogador_id
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+GROUP BY a.nome_abertura
+HAVING media_rating_oponente > 2000
+ORDER BY total_vitorias DESC;
+
+
+```
+
+#### 5. Qual abertura resulta em partidas mais rápidas?
+
+```sql
+
+SELECT 
+    a.nome_abertura,
+    AVG(p.num_turnos) AS media_turnos
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+JOIN ChessDW.DimPartida p ON f.partida_id = p.partida_id
+GROUP BY a.nome_abertura
+ORDER BY media_turnos ASC
+LIMIT 10;
+
+```
+
+#### 6. Quais aberturas levam a mais empates?
+```sql
+SELECT 
+    a.nome_abertura,
+    SUM(CASE WHEN f.vencedor = 'empate'
+                THEN 1 ELSE 0 END) AS total_empates
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+GROUP BY a.nome_abertura
+ORDER BY total_empates DESC
+LIMIT 10;
+```
+
+## 5. Considerações Finais
+
+Este projeto demonstrou como a implementação de um Data Warehouse pode proporcionar insights valiosos sobre estratégias de abertura no xadrez. A análise das aberturas permitiu identificar tendências, eficácia e popularidade de diferentes estratégias, oferecendo insights para jogadores e treinadores aprimorarem suas técnicas.

@@ -1,0 +1,74 @@
+-- 1) Quais aberturas levam à maior taxa de vitórias?
+SELECT 
+    a.nome_abertura,
+    COUNT(*) AS total_partidas,
+    SUM(CASE WHEN f.vencedor = 'branco' THEN 1 
+             WHEN f.vencedor = 'preto' THEN 1 
+             ELSE 0 END) AS total_vitorias
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+GROUP BY a.nome_abertura
+ORDER BY total_vitorias DESC
+LIMIT 10;
+
+-- 2) Quais aberturas são mais populares entre os jogadores com alta classificação? Sem o total_partidas
+SELECT 
+    a.nome_abertura,
+    AVG(j.rating) AS media_rating
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimJogador j ON f.jogador_branco_id = j.jogador_id OR f.jogador_preto_id = j.jogador_id
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+GROUP BY a.nome_abertura
+ORDER BY media_rating DESC
+LIMIT 10;
+
+-- 3) Qual abertura foi a mais popular no ano(2017)?
+SELECT 
+    a.nome_abertura,
+    COUNT(*) AS total_uso
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimTempo t ON f.tempo_id = t.tempo_id
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+WHERE t.ano = 2017
+GROUP BY a.nome_abertura
+ORDER BY total_uso DESC
+LIMIT 10;
+
+-- 4) Quais aberturas mais eficazes contra jogadores altamente classificados
+SELECT 
+    a.nome_abertura,
+    AVG(j.rating) AS media_rating_oponente,
+    SUM(CASE WHEN f.vencedor = 'branco' THEN 1 
+             WHEN f.vencedor = 'preto' THEN 1 
+             ELSE 0 END) AS total_vitorias,
+    COUNT(*) AS total_partidas
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimJogador j ON f.jogador_preto_id = j.jogador_id
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+GROUP BY a.nome_abertura
+HAVING media_rating_oponente > 2000
+ORDER BY total_vitorias DESC;
+
+-- 5) Qual abertura resulta em partidas mais rápidas?
+SELECT 
+    a.nome_abertura,
+    AVG(p.num_turnos) AS media_turnos
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+JOIN ChessDW.DimPartida p ON f.partida_id = p.partida_id
+GROUP BY a.nome_abertura
+ORDER BY media_turnos ASC
+LIMIT 10;
+
+-- 6) Quais aberturas levam a mais empates?
+SELECT 
+    a.nome_abertura,
+    SUM(CASE WHEN f.vencedor = 'empate'
+                THEN 1 ELSE 0 END) AS total_empates
+FROM ChessDW.FatoPartidas f
+JOIN ChessDW.DimAbertura a ON f.abertura_id = a.abertura_id
+GROUP BY a.nome_abertura
+ORDER BY total_empates DESC
+LIMIT 10;
+
+

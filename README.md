@@ -1,7 +1,7 @@
 # Data Warehouse - Análise de Aberturas de Xadrez
 
-*Aluno: [Seu Nome]
-*Orientador: [Nome do Orientador]
+*Aluno: Wendel Adriano Bitencourt
+
 
 ## 1. Introdução
 
@@ -59,14 +59,11 @@ O desenvolvimento do Data Warehouse foi dividido nas seguintes etapas:
 ## 4. Desenvolvimento
 
 ### 4.1 Fontes de Dados
-Os dados utilizados para compor o Data Warehouse são oriundos de um arquivo CSV contendo detalhes de partidas de xadrez.
+Os dados utilizados para compor o Data Warehouse são oriundos de um arquivo CSV do site [https://www.kaggle.com/datasets/datasnaek/chess] contendo detalhes de partidas de xadrez.
 
-### 4.2 Modelagem das Tabelas
-Foram modeladas as seguintes tabelas:
+### 4. 2 Desenvolvimento
 
-#### Tabela `DimJogador`
-```sql
-CREATE TABLE DimJogador (
-    jogador_id VARCHAR(255) PRIMARY KEY,
-    rating INT
-);
+
+
+
+
